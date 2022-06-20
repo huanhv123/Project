@@ -1,137 +1,39 @@
-const app=require("./src/server")
-const Database = require("./src/database/mongo.js");
-// const Item = require("./src/models/item.model");
-// const { db } = require("./src/models/item.model");
-const Phong = require("./src/models/phong.model");
-const { db } = require("./src/models/phong.model");
+const express =require("express");
+const cors =require("cors");
+const app=express();
+var mongoose=require("mongoose");
+var bodyParser=require("body-parser");
+const morgan=require("morgan");
+const dotenv =require("dotenv");
+const staffRouter= require("./routes/staff")
+const accountRouter= require("./routes/account")
+const serviceRouter= require("./routes/service")
+const customerRouter= require("./routes/customer")
+const kindroomRouter= require("./routes/kindroom")
+const roomRouter= require("./routes/room")
+const roomvoucherRouter= require("./routes/roomvoucher")
+// const bookingRouter= require("./routes/booking")
 
-var MongoClient = require('mongodb').MongoClient;
-var url = "mongodb://localhost:27017/";
+//tao file .env 
+//MONGODB_URL=mongodb+srv://user:password@cluster0.fidun.mongodb.net/Hotel?retryWrites=true&w=majority
 
-// MongoClient.connect(url, function(err, db) {
-//   if (err) throw err;
-//   var dbo = db.db("mydb");
-//   var myobj = { name: "Company Inc", address: "Highway 37" };
-//   dbo.collection("customers").insertOne(myobj, function(err, res) {
-//     if (err) throw err;
-//     console.log("1 document inserted");
-//     db.close();
-//   });
-// });
+dotenv.config();
+mongoose.connect(process.env.MONGODB_URL,()=>{
+    console.log("Connected to MongoDB");
+})
+app.use(bodyParser.json());
+app.use(cors());
+app.use(morgan("common"));
 
-async function main() {
-    // let db= await Database.intstance.createDatabase();
-    let phong1=new Phong({
-      tennguoithue: "Hao" ,
-      ngaybatdau: new Date('Jun 23, 1912'),
-      ngayketthuc: new Date('Jun 07, 1954'),
-      loaiphong:"Phong Vip",
+app.use("/staff",staffRouter);
+app.use("/account",accountRouter);
+app.use("/service",serviceRouter);
+app.use("/customer",customerRouter);
+app.use("/kindroom",kindroomRouter);
+app.use("/room",roomRouter);
+app.use("/roomvoucher",roomvoucherRouter);
+// app.use("/booking",bookingRouter);
 
-    });
-    phong1.save((error,doc)=>{
-      console.log(error,doc)
-    });
-  // }
-  // app.get("/", (request, response) => {
-    
-  //   // console.log(__dirname + '/bt.html')
-  //   response.sendFile(__dirname + '/index.html')
-  //   });
-    
-  // app.get("/",(req,res)=>{
-  //   Phong.find({},(error,docs)=>{
-  //     if(!error){
-  //       res.json(docs);
-  //     }
-  //   });
-  // });
-
-  // app.get("/item/:docId", async function (request, response) {
-  //   let params = request.params.docId;
-  //   // let collection = request.params.collection;
-
-  //   Item.find({_id:{
-  //     $oid: params
-  //   },}.then((value)=>{
-  //     console.log(value)
-  //   }))
-
-  // });
-
-//   app.post("/api/item",(req,res)=>{
-//   let body =req.body;
-//   let data=body.data;
-//   // console.log(data);
-//   try{
-//   let temp=new Item(data);
-//   temp.save((err,value)=>{
-//     res.json({
-//       message:"Successful",
-//       data:value,
-//     });
-//   });
-// }catch(err){
-//   res.status(404).json({message:err.toString()})
-// };
-//   });
-
-  // app.put("/api/item",(req,res)=>{
-  //   let body =req.body;
-  //   let docId=body.docId;
-  //   let data=body.data;
-  //   Item.findByIdAndUpdate(docId,data,(err,value,result)=>{
-  //     // console.log(err,value,result);
-  //     res.json(value)
-  //   })
-  //   });
-
-    // app.put("/api/item",(req,res)=>{
-    //   let body =req.body;
-    //   let docId=body.docId;
-    //   let data=body.data;
-    //   Item.findByIdAndUpdate(docId,{$set:data },(err,value,result)=>{
-    //     // console.log(err,value,result);
-    //     res.json(value)
-    //   })
-    //      res.send({
-    //   message: "Update successful!!",
-    //   updateTime: result.writeTime,
-    // });
-    //   });
-    
-    // app.delete("/api/db",(req,response)=>{
-    //   let body =req.body;
-    //   let docId=body.docId;
-    //   Item.findByIdAndDelete(docId,(err,doc,res)=>{
-    //    console.log(doc,res)
-    //    response.send();
-    //   })
-    //   });
-
-    //   app.delete("/api/db",(req,response)=>{
-    //     let body =req.body;
-    //     let docId=body.docId;
-    //     let docs =[...req.body.docs];
-    //     for(let docId of docs){
-    //       firestore.collection(collection).doc(docId ).delete()
-    //     }
-    //     Item.findByIdAndDelete(docId,(err,doc,res)=>{
-    //      console.log(doc,res)
-    //      response.send();
-    //     })
-    //     });
-
-    //   app.delete("/api/db",(req,response)=>{
-    //     let body =req.body;
-    //     let collection=body.collection;
-    //     db.dropCollectione(collection,(err)=>{
-    //      response.send(err);
-    //     })
-    //     });
-      
-
-app.listen(3000,"0.0.0.0",()=>{
-    console.log("Server is running on http://127.0.0.1:3000/")
-});
-}
-main();
+app.listen(3000,()=>{
+    console.log("Server is running...");
+})
